@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FBFBFB"
+    tools:context=".MainActivity">
+
+    <com.example.decends.Croller.Croller
+        android:id="@+id/croller"
+        android:layout_width="203dp"
+        android:layout_height="219dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="350dp"
+        android:layout_marginEnd="106dp"
+        app:back_circle_color="#C84D4D"
+        app:indicator_color="#0B3C49"
+        app:indicator_width="10"
+        app:is_continuous="true"
+        app:label_color="#000000"
+        app:main_circle_color="#D50D0D"
+        app:max="1000"
+        app:progress_primary_color="#0B3C49"
+        app:progress_secondary_color="#811C1C"
+        app:start_offset="45" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="121dp"
+        android:layout_marginEnd="160dp"
+        android:text="Button" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="253dp"
+        android:layout_marginEnd="177dp"
+        android:textColor="@color/black"
+        android:text="TextView" />
+
+</RelativeLayout>
