@@ -10,16 +10,21 @@ import com.example.decends.R;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.PagerAdapter;
+
+import java.util.ArrayList;
 
 public class SlideAdapter extends PagerAdapter {
 
     Context context;
     LayoutInflater layoutInflater;
+    ArrayList<Fragment> fragmentArrayList = new ArrayList<>();
+
     int images[] = {
             R.drawable.onboarding_page1,
             R.drawable.onboarding_page2,
-            R.drawable.onboarding_page3
+            R.layout.dashboard
 
     };
 
@@ -29,13 +34,14 @@ public class SlideAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return images.length;
+        return fragmentArrayList.size();
     }
 
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
         return view == (ConstraintLayout)object;
     }
+
 
     @NonNull
     @Override

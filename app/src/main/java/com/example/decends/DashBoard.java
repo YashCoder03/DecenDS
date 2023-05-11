@@ -39,7 +39,7 @@ import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
 public class DashBoard extends AppCompatActivity {
     NetworkChangeListener networkChangeListener = new NetworkChangeListener();
 
-    Button mbutton;
+
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
     private String url = "https://85e1-103-82-43-60.ngrok-free.app/register";
@@ -47,17 +47,7 @@ public class DashBoard extends AppCompatActivity {
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dashboard);
-        mbutton = (Button) findViewById(R.id.button);
-        mbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    getData();
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
+
     }
 
     void getData() throws JSONException {

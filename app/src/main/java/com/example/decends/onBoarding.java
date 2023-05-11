@@ -1,7 +1,10 @@
 package com.example.decends;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -17,12 +20,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.decends.Fragments.onBoardingPage1;
+import com.example.decends.Fragments.onBoardingPage2;
+import com.example.decends.Fragments.onBoardingPage3;
 import com.example.decends.utility.NetworkChangeListener;
 import com.example.decends.utility.SlideAdapter;
+import com.example.decends.utility.VPAdapter;
+import com.google.android.material.tabs.TabLayout;
 
 public class onBoarding extends AppCompatActivity {
 
-    ViewPager viewPager;
+    ViewPager2 viewPager;
+    TabLayout tabLayout;
     LinearLayout dots;
     TextView[] dot;
 
@@ -35,19 +44,25 @@ public class onBoarding extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_on_boarding);
 
         lets = findViewById(R.id.get_started_btn);
         viewPager = findViewById(R.id.viewPager2);
         dots = findViewById(R.id.dots);
 
+        VPAdapter vpAdapter = new VPAdapter(this);
+        vpAdapter.addFragment(new onBoardingPage1());
+        vpAdapter.addFragment(new onBoardingPage2());
+        vpAdapter.addFragment(new onBoardingPage3());
+
+
         SlideAdapter slideAdapter = new SlideAdapter(this);
-        viewPager.setAdapter(slideAdapter);
+        viewPager.setAdapter(vpAdapter);
 
-        addDots(0);
+        //addDots(0);
 
-        lets.setOnClickListener(new View.OnClickListener() {
+        /*lets.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(onBoarding.this, "starting Seekbar", Toast.LENGTH_SHORT).show();
@@ -82,7 +97,7 @@ public class onBoarding extends AppCompatActivity {
         {
             dot[position].setTextColor(getResources().getColor(R.color.black));
         }
-        viewPager.addOnPageChangeListener(changeListener);
+        viewPager.addOnAttachStateChangeListener((View.OnAttachStateChangeListener) changeListener);
     }
 
     ViewPager.OnPageChangeListener changeListener = new ViewPager.OnPageChangeListener() {
@@ -115,8 +130,8 @@ public class onBoarding extends AppCompatActivity {
         public void onPageScrollStateChanged(int state) {
 
         }
-    };
+    };*/
 
-
+    }
 
 }
