@@ -17,8 +17,9 @@ public class SlideAdapter extends PagerAdapter {
     Context context;
     LayoutInflater layoutInflater;
     int images[] = {
-            R.drawable.logo2,
-            R.drawable.ic_launcher_background
+            R.drawable.onboarding_page1,
+            R.drawable.onboarding_page2,
+            R.drawable.onboarding_page3
 
     };
 

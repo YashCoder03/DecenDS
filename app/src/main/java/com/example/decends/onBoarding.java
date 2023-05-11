@@ -69,7 +69,7 @@ public class onBoarding extends AppCompatActivity {
     }
     private void addDots(int position)
     {
-        dot = new TextView[2];
+        dot = new TextView[3];
         dots.removeAllViews();
         for(int i = 0 ; i < dot.length;i++)
         {
