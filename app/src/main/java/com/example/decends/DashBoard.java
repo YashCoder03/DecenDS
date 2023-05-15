@@ -1,11 +1,18 @@
 package com.example.decends;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
+import android.view.LayoutInflater;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -19,94 +26,181 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.decends.utility.ApiCall;
+import com.example.decends.utility.BackgroundService;
 import com.example.decends.utility.NetworkChangeListener;
+import com.example.decends.utility.ServerAlert;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import static android.content.ContentValues.TAG;
-import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
 
 public class DashBoard extends AppCompatActivity {
     NetworkChangeListener networkChangeListener = new NetworkChangeListener();
 
-
+    TextView coins,peer,sent,recived,bandwidth;
     private RequestQueue mRequestQueue;
+    SwipeRefreshLayout swipeRefreshLayout;
     private StringRequest mStringRequest;
-    private String url = "https://85e1-103-82-43-60.ngrok-free.app/register";
+
+    private long startTime;
+    private long activeTime;
+
+    private String url = "";
     @Override
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dashboard);
+        url = getString(R.string.url)+"/dashboard";
+
+        Intent intent = new Intent(this, ApiCall.class);
+        this.startService(intent);
+
+
+        coins = findViewById(R.id.coins);
+        peer = findViewById(R.id.peer);
+        sent = findViewById(R.id.sent);
+        recived = findViewById(R.id.recived);
+        bandwidth = findViewById(R.id.bandwidth);
+
+        startService(new Intent(this, BackgroundService.class));
+
+
+        dialog dial = new dialog(this);
+        dial.startLoadingdialog();
+
+
+                RequestQueue mRequestQueue = Volley.newRequestQueue(getApplicationContext());
+                JsonObjectRequest jsonObjectRequest;
+                JSONObject jsonObject =new JSONObject();
+
+                String mRequestBody  = jsonObject.toString();
+
+                final Boolean[] isError = {false};
+
+                JsonObjectRequest jsonObjectRequest1;
+                jsonObjectRequest1 =  new JsonObjectRequest(Request.Method.POST, (R.string.url) + "/active_time", null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                })
+                {
+                    @Nullable
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError {
+                        Map<String, String> params = new HashMap<>();
+                        return super.getParams();
+                    }
+
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        SharedPreferences sh = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                        String token = sh.getString("token", "");
+
+                        Map<String,String> params = new HashMap<>();
+                        params.put( "Authorization",token);
+                        return  params;
+                    }
+                };
+
+
+                jsonObjectRequest =  new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        try {
+                            coins.setText(response.getString("coins_earned"));
+                            peer.setText(response.getString("peerId"));
+                            sent.setText(response.getString("data_uploaded"));
+                            recived.setText(response.getString("data_downloaded"));
+                            bandwidth.setText(response.getString("bandwidth_used"));
+                            dial.dismissdialog();
+
+
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                       // Toast.makeText(DashBoard.this, response.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(DashBoard.this, error.toString(), Toast.LENGTH_SHORT).show();
+                        dial.dismissdialog();
+                        isError[0] = true;
+                        ServerAlert serverAlert = new ServerAlert();
+                        serverAlert.startAlert(DashBoard.this,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+                    }
+                })
+                {
+                    @Override
+                    public String getBodyContentType() {
+                        return "application/json; charset=utf-8";
+                    }
+
+                    @Override
+                    public byte[] getBody() {
+                        try {
+                            return mRequestBody == null ? null : mRequestBody.getBytes("utf-8");
+                        } catch (UnsupportedEncodingException uee) {
+                            VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
+                            return null;
+                        }
+                    }
+
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        SharedPreferences sh = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                        String token = sh.getString("token", "");
+
+                        Map<String,String> params = new HashMap<>();
+                        params.put( "Authorization",token);
+                        return  params;
+
+                    }
+                };
+
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(!isError[0])
+                {
+                    //  mRequestQueue.add(jsonObjectRequest);
+                    handler.postDelayed(this, 10000); // 10 seconds
+                }
+            }
+        }, 0);
+
+
+
 
     }
 
-    void getData() throws JSONException {
-        mRequestQueue = Volley.newRequestQueue(this);
-        JSONObject jsonBody = new JSONObject();
-        jsonBody.put("username", "yash");
-        jsonBody.put("password", "yash123");
-        jsonBody.put("email","swappu");
 
-        final String mRequestBody = jsonBody.toString();
-        
-        mStringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>(){
-            @Override
-            public void onResponse(String response) {
 
-                Toast.makeText(getApplicationContext(),"hey you click me",Toast.LENGTH_SHORT).show();
 
-                Toast.makeText(getApplicationContext(), "Response :" + response.toString(), Toast.LENGTH_LONG).show();//display the response on screen
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(),error.toString(),Toast.LENGTH_SHORT).show();
 
-                Log.i(TAG, "Error :" + error.toString());
-            }
-           }) {
-            @Override
-            public String getBodyContentType() {
-                return "application/json; charset=utf-8";
-            }
-
-            @Override
-            public byte[] getBody() throws AuthFailureError {
-                try {
-                    return mRequestBody == null ? null : mRequestBody.getBytes("utf-8");
-                } catch (UnsupportedEncodingException uee) {
-                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
-                    return null;
-                }
-            }
-
-            @Override
-            protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                String responseString = "";
-                if (response != null) {
-
-                    responseString = String.valueOf(response.statusCode);
-
-                }
-                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-            }
-
-    };
-
-        mRequestQueue.add(mStringRequest);
-    }
 
     protected void onStart() {
+
+        startService(new Intent(this, BackgroundService.class));
 
         IntentFilter intentFilter =new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(networkChangeListener,intentFilter);
@@ -115,5 +209,39 @@ public class DashBoard extends AppCompatActivity {
     protected void onStop(){
         unregisterReceiver(networkChangeListener);
         super.onStop();
+    }
+    public class dialog {
+        // 2 objects activity and dialog
+        private Activity activity;
+        private AlertDialog dialog;
+
+        // constructor of dialog class
+        // with parameter activity
+        dialog(Activity myActivity) {
+            activity = myActivity;
+        }
+
+        @SuppressLint("InflateParams")
+        void startLoadingdialog() {
+
+            // adding ALERT Dialog builder object and passing activity as parameter
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+            //layoutinflater object and use activity to get layout inflater
+            LayoutInflater inflater = activity.getLayoutInflater();
+            builder.setView(inflater.inflate(R.layout.loading, null));
+
+            builder.setCancelable(false);
+
+
+            dialog = builder.create();
+            dialog.show();
+        }
+
+        // dismiss method
+        void dismissdialog() {
+            dialog.dismiss();
+        }
+
     }
 }

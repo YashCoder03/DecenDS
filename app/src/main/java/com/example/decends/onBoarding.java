@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,10 +35,12 @@ public class onBoarding extends AppCompatActivity {
     TabLayout tabLayout;
     LinearLayout dots;
     TextView[] dot;
+    ImageButton next;
 
+    Button yes;
+    Button no;
+    int current= 0;
     NetworkChangeListener networkChangeListener = new NetworkChangeListener();
-
-    Button lets;
 
     Animation animation;
 
@@ -46,8 +49,29 @@ public class onBoarding extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_on_boarding);
+        View inflatedView = getLayoutInflater().inflate(R.layout.fragment_on_boarding_page3, null,true);
+        next = findViewById(R.id.next);
 
-        lets = findViewById(R.id.get_started_btn);
+        yes = inflatedView.findViewById(R.id.yes);
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(),"hello",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(onBoarding.this, PeerId.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        no = inflatedView.findViewById(R.id.no);
+
+        no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewPager.setCurrentItem(0);
+            }
+        });
+
         viewPager = findViewById(R.id.viewPager2);
         dots = findViewById(R.id.dots);
 
@@ -56,18 +80,42 @@ public class onBoarding extends AppCompatActivity {
         vpAdapter.addFragment(new onBoardingPage2());
         vpAdapter.addFragment(new onBoardingPage3());
 
+        //Toast.makeText(this,"inside",Toast.LENGTH_SHORT).show();
 
         SlideAdapter slideAdapter = new SlideAdapter(this);
+
+        addDots(1);
         viewPager.setAdapter(vpAdapter);
 
-        //addDots(0);
-
-        /*lets.setOnClickListener(new View.OnClickListener() {
+        next.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Toast.makeText(onBoarding.this, "starting Seekbar", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(onBoarding.this,SeekBar.class));
-                finish();
+            public void onClick(View v) {
+                viewPager.setCurrentItem(current + 1);
+            }
+        });
+
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position ==  2)
+                {
+                    next.setVisibility(View.INVISIBLE);
+                }
+                else
+                {
+                    next.setVisibility(View.VISIBLE);
+                }
+                addDots(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
             }
         });
     }
@@ -82,9 +130,12 @@ public class onBoarding extends AppCompatActivity {
         unregisterReceiver(networkChangeListener);
         super.onStop();
     }
+
     private void addDots(int position)
     {
         dot = new TextView[3];
+        current = position;
+        //Toast.makeText(getApplicationContext(),"inside",Toast.LENGTH_SHORT).show();
         dots.removeAllViews();
         for(int i = 0 ; i < dot.length;i++)
         {
@@ -93,45 +144,30 @@ public class onBoarding extends AppCompatActivity {
             dot[i].setTextSize(35);
             dots.addView(dot[i]);
         }
-        if(dot.length > 0)
-        {
-            dot[position].setTextColor(getResources().getColor(R.color.black));
-        }
-        viewPager.addOnAttachStateChangeListener((View.OnAttachStateChangeListener) changeListener);
+
+        dot[position].setTextColor(getResources().getColor(R.color.purple_700,getApplicationContext().getTheme()));
+
     }
 
     ViewPager.OnPageChangeListener changeListener = new ViewPager.OnPageChangeListener() {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+            addDots(position);
         }
 
         @Override
         public void onPageSelected(int position) {
             addDots(position);
+            Toast.makeText(getApplicationContext(),"outside",Toast.LENGTH_SHORT).show();
 
-            if(position == 0)
-            {
-                lets.setVisibility(View.INVISIBLE);
-            }
-            else if(position == 1)
-            {
-                animation = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.bottom_anim);
-                lets.setAnimation(animation);
-                lets.setVisibility(View.VISIBLE);
-            }
-            else if(position == 2)
-            {
-                lets.setVisibility(View.VISIBLE);
-            }
+
         }
 
         @Override
         public void onPageScrollStateChanged(int state) {
 
         }
-    };*/
-
-    }
+    };
 
 }
+

@@ -24,29 +24,33 @@
 
     <Button
 
-        android:layout_width="wrap_content"
-
-        android:layout_height="wrap_content"
-        android:text="Button"
+        android:layout_width="278dp"
+        android:id="@+id/yes"
+        android:textColor="@color/white"
+        android:layout_height="54dp"
+        android:text="Yes"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.233"
+        android:background="@drawable/round_corner"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="@+id/imageView6"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.545" />
+        app:layout_constraintVertical_bias="0.573" />
 
     <Button
 
-        android:id="@+id/button3"
+        android:id="@+id/no"
 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
+        android:layout_width="278dp"
+        android:layout_height="54dp"
+        android:text="No"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.738"
+        android:background="@drawable/round_corner"
+        app:layout_constraintHorizontal_bias="0.529"
         app:layout_constraintStart_toStartOf="@+id/imageView6"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.545" />
+        app:layout_constraintVertical_bias="0.738" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
