@@ -47,7 +47,7 @@ import static android.content.ContentValues.TAG;
 public class DashBoard extends AppCompatActivity {
     NetworkChangeListener networkChangeListener = new NetworkChangeListener();
 
-    TextView coins,peer,sent,recived,bandwidth;
+    TextView peer,sent,recived,bandwidth,username;
     private RequestQueue mRequestQueue;
     SwipeRefreshLayout swipeRefreshLayout;
     private StringRequest mStringRequest;
@@ -60,17 +60,20 @@ public class DashBoard extends AppCompatActivity {
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dashboard);
-        url = getString(R.string.url)+"/dashboard";
+        url = getString(R.string.ipfsurl)+"/api/v0/stats/bw";
 
         Intent intent = new Intent(this, ApiCall.class);
         this.startService(intent);
 
 
-        coins = findViewById(R.id.coins);
+        username = findViewById(R.id.coins);
         peer = findViewById(R.id.peer);
         sent = findViewById(R.id.sent);
         recived = findViewById(R.id.recived);
         bandwidth = findViewById(R.id.bandwidth);
+        SharedPreferences sh = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        String token = sh.getString("username", "");
+        username.setText(token);
 
         startService(new Intent(this, BackgroundService.class));
 
@@ -87,48 +90,16 @@ public class DashBoard extends AppCompatActivity {
 
                 final Boolean[] isError = {false};
 
-                JsonObjectRequest jsonObjectRequest1;
-                jsonObjectRequest1 =  new JsonObjectRequest(Request.Method.POST, (R.string.url) + "/active_time", null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                })
-                {
-                    @Nullable
-                    @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        Map<String, String> params = new HashMap<>();
-                        return super.getParams();
-                    }
-
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        SharedPreferences sh = getSharedPreferences("MySharedPref", MODE_PRIVATE);
-                        String token = sh.getString("token", "");
-
-                        Map<String,String> params = new HashMap<>();
-                        params.put( "Authorization",token);
-                        return  params;
-                    }
-                };
-
-
                 jsonObjectRequest =  new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
 
                         try {
-                            coins.setText(response.getString("coins_earned"));
-                            peer.setText(response.getString("peerId"));
-                            sent.setText(response.getString("data_uploaded"));
-                            recived.setText(response.getString("data_downloaded"));
-                            bandwidth.setText(response.getString("bandwidth_used"));
+                            //coins.setText(response.getString("coins_earned"));
+                            peer.setText(response.getString("TotalOut").substring(0,4));
+                            sent.setText(response.getString("RateOut").substring(0,4));
+                            recived.setText(response.getString("RateIn").substring(0,4));
+                            bandwidth.setText(response.getString("TotalIn").substring(0,4));
                             dial.dismissdialog();
 
 
@@ -162,7 +133,6 @@ public class DashBoard extends AppCompatActivity {
                             return null;
                         }
                     }
-
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         SharedPreferences sh = getSharedPreferences("MySharedPref", MODE_PRIVATE);
@@ -182,8 +152,8 @@ public class DashBoard extends AppCompatActivity {
             public void run() {
                 if(!isError[0])
                 {
-                    //  mRequestQueue.add(jsonObjectRequest);
-                    handler.postDelayed(this, 10000); // 10 seconds
+                    mRequestQueue.add(jsonObjectRequest);
+                    handler.postDelayed(this, 1000 * 60 ); // 10 seconds
                 }
             }
         }, 0);

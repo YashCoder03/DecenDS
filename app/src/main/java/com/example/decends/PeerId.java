@@ -59,7 +59,7 @@ public class PeerId extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.peer_id);
         url = getString(R.string.url)+"/android_auth";
-        Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
         rent = findViewById(R.id.rent);
         userNametxt = findViewById(R.id.username);
         peerIdtxt = findViewById(R.id.peerid);
@@ -97,7 +97,7 @@ public class PeerId extends AppCompatActivity {
                             String token = response.getString("token");
                             SharedPreferences sh = getSharedPreferences("MySharedPref", MODE_PRIVATE);
                             SharedPreferences.Editor myEdit = sh.edit();
-
+                            myEdit.putString("username",jsonObject.getString("username"));
                             myEdit.putString("token",token);
                             myEdit.apply();
 
@@ -137,7 +137,7 @@ public class PeerId extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         //Toast.makeText(getApplicationContext(),error.toString(),Toast.LENGTH_SHORT).show();
-                        Toast.makeText(getApplicationContext(),"Wrong UserName and PeerID" + error.toString(),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"Wrong UserName and PeerID",Toast.LENGTH_SHORT).show();
 
 
                     }
@@ -194,6 +194,7 @@ public class PeerId extends AppCompatActivity {
 
 
 
+
         String mRequestBody = jsonObject.toString();
 
 
@@ -207,6 +208,7 @@ public class PeerId extends AppCompatActivity {
                     SharedPreferences.Editor myEdit = sh.edit();
 
                     myEdit.putString("token",token);
+                    myEdit.putString("username",userName.toString());
                     myEdit.apply();
 
                     dialog d =new dialog(PeerId.this);
@@ -218,6 +220,7 @@ public class PeerId extends AppCompatActivity {
                         try {
 
                             // code runs in a thread
+
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
